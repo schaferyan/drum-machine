@@ -1,1 +1,2 @@
-React based drum machine web app using Create React App tool chain
+# drum-machine
+A drum machine built with React using the Create React App toolchain.
