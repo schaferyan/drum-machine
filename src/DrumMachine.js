@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './DrumMachine.css';
 
 const keys = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
