@@ -1,5 +1,9 @@
 # drum-machine
 A simple drum machine built with React using the Create React App toolchain.
+<br>
+<br>
+![screenshot of react drum machine in browser](https://github.com/schaferyan/drum-machine/blob/master/screenshots/Screenshot%20(838).png)
+
 
 ## Getting Started
 1. Clone or download the repository. Open a command prompt and `CD` into the project folder
