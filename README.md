@@ -1,5 +1,5 @@
 # drum-machine
-A simple drum machine built with React using the Create React App toolchain.
+A simple drum machine built with React using the Create React App toolchain. The samples were found at sampleswap.org, and are played via urls. I intitially completed this project  on Codepen.io as part of the FreeCodeCamp Frontend Libraries Certificate, but I decided it merited further experimentation so I implemented it locally using Create React App.
 <br>
 <br>
 ![screenshot of react drum machine in browser](https://github.com/schaferyan/drum-machine/blob/master/screenshots/Screenshot%20(838).png)
@@ -10,10 +10,11 @@ A simple drum machine built with React using the Create React App toolchain.
 2. You will need to install/update npm if you have not already - use `sudo apt-get install npm` (or `npm install` if you are using Windows)
 3. Run `npm start` - the application should open in a browser window. If not, open http://localhost:3000/ manually.
 
+## Plans for Future Updates
+I intend to add a few more sound banks and a control element for cycling through them. I'd also like to add an interface that allows users to create their own soundbank by entering custom urls. I'm also considering adding recording and/or step sequencer functionality.
 
-## Create React App
-This project was built by modifying the Create React App template. From the Create React App documentation pages:
-
+## Modifying this Project
+This project was built by modifying the Create React App template. If you want to make changes to it there are a few things to be aware of. From the Create React App documentation pages:
 
 >For the project to build, these files must exist with exact filenames:
 
@@ -22,4 +23,6 @@ This project was built by modifying the Create React App template. From the Crea
 
 >You can delete or rename the other files.
 
-For more information about the Create React App toolchain visit https://create-react-app.dev/
+A few other commands you may find useful are `npm test` for testing and `npm run build` if you want to produce a deployable build
+
+For more information about the Create React App toolchain refer to the documentation at https://create-react-app.dev/
