@@ -1,5 +1,5 @@
 # drum-machine
-A simple drum machine built with React using the Create React App toolchain. The samples were found at sampleswap.org, and are played via urls. I intitially completed this project  on Codepen.io as part of the FreeCodeCamp Frontend Libraries Certificate, but I decided it merited further experimentation so I implemented it locally using Create React App.
+A simple drum machine built with React using the Create React App toolchain. It plays samples downloaded from sampleswap.org and can be controlled via mouse or keyboard. I intitially completed this project  on Codepen.io as part of the FreeCodeCamp Frontend Libraries Certificate, but I decided it merited further experimentation so I implemented it locally using Create React App.
 <br>
 <br>
 ![screenshot of react drum machine in browser](https://github.com/schaferyan/drum-machine/blob/master/screenshots/Screenshot%20(838).png)
@@ -10,10 +10,10 @@ A simple drum machine built with React using the Create React App toolchain. The
 2. You will need to install/update npm if you have not already - use `sudo apt-get install npm` (or `npm install` if you are using Windows)
 3. Run `npm start` - the application should open in a browser window. If not, open http://localhost:3000/ manually.
 
-## Known Issues
+## Bug Fixes
 
 ### Latency
-Depending on your system information and web browser, you may experience significant latency. For the time being I don't recommend using Firefox. If the delay time between hit a key and hearing the sound is making the drum machine unplayable, try using Brave or Edge for a better experience. I'm planning to migrate to the Web Audio API soon, which should improve timing and latency issues. 
+I recently migrated the project to use the Web Audio API, instead of just playing sound from <audio> tags using the HTML DOM Audio object. This seems to have significantly decreased latency.
 
 ## Plans for Future Updates
 I intend to add a few more sound banks and a control element for cycling through them. I'd also like to add an interface that allows users to create their own soundbank by entering custom urls. I'm also considering adding recording and/or step sequencer functionality.
