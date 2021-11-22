@@ -19,10 +19,10 @@ async function setupSamples(audioContext, samples, keyset) {
 function playSample(audioContext, audioBuffer, time, vol) {
     const sampleSource = audioContext.createBufferSource();
     sampleSource.buffer = audioBuffer;
+    const duration = audioBuffer.duration;
     const gainNode = audioContext.createGain();
     sampleSource.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    console.log("volume passed was " + vol);
     gainNode.gain.value = vol;
     sampleSource.start(time);
     return sampleSource;

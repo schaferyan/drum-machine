@@ -39,6 +39,11 @@
   grid-column: 2;
 }
 
+.drum-pad-active {
+  background: black;
+  color: white;
+}
+
 .control-element {
 }
 

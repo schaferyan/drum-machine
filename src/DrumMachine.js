@@ -63,7 +63,12 @@ export default class DrumMachine extends React.Component {
     playSample(this.props.audioContext, sample, 0, this.state.vol);
     const name = this.props.soundBank[char].name;
     this.setDisplay(name);
+    const pad = document.getElementById(char);
+    pad.classList.add('drum-pad-active');
+    const timeoutID = setTimeout(() => {pad.classList.remove('drum-pad-active')}, sample.duration * 1000);
   }
+
+  
 
   setDisplay(soundName) {
     this.setState({
@@ -72,7 +77,6 @@ export default class DrumMachine extends React.Component {
   }
   handleVolChange = (event) => {
     this.setState({ vol: event.target.value });
-    console.log(this.state.vol);
   };
 
   onKeyDown = (event) => {
@@ -102,6 +106,8 @@ export default class DrumMachine extends React.Component {
     );
   }
 }
+
+
 
 /*passed keyset as prop to avoid redundancy and improve modability
 implemented gain node to restore master volume control*/
