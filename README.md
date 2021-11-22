@@ -1,8 +1,11 @@
 # drum-machine
-A simple drum machine built with React using the Create React App toolchain. It plays samples downloaded from sampleswap.org and can be controlled via mouse or keyboard. I intitially completed this project  on Codepen.io as part of the FreeCodeCamp Frontend Libraries Certificate, but I decided it merited further experimentation so I implemented it locally using Create React App. Click [here](https://admiring-curran-f5b783.netlify.app/) to see a deployment using Netlify.
+A simple drum machine built with React using the Create React App toolchain. It plays samples downloaded from sampleswap.org and can be controlled via mouse or keyboard. I intitially completed this project  on Codepen.io as part of the FreeCodeCamp Frontend Libraries Certificate, but I decided it merited further experimentation so I implemented it locally using Create React App. 
 <br>
 <br>
 ![screenshot of react drum machine in browser](https://github.com/schaferyan/drum-machine/blob/master/screenshots/Screenshot%20(838).png)
+
+## Deployment
+Click [here](https://admiring-curran-f5b783.netlify.app/) to see a simple deployment of this project using Netlify.
 
 
 ## Getting Started
