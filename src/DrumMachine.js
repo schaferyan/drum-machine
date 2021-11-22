@@ -1,70 +1,8 @@
 import React from 'react';
 import './DrumMachine.css';
+import {playSample} from './audioFunctions'
 
-const keys = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
-const sounds = [
-  {
-    name: "ANALOG KICK",
-    src:
-    	"samples/Kicks/analogbd.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Kicks/18[kb]analogbd.wav.mp3"
-
-  },
-  {
-    name: "ACCOUSTIC SNARE",
-    src:
-    	"samples/Snares/acoustic_snare.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Snares/61[kb]acoustic_snare.wav.mp3"
-  },
-  {
-    name: "CLEAR HAT",
-    src:
-    	"samples/Hats/clear-hat.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Hats/14[kb]clear-hat.wav.mp3"
-  },
-  {
-    name: "AMBIENT TOM",
-    src:
-    	"samples/Toms/ambient_tom_1.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Toms/264[kb]ambient_tom_1.wav.mp3"
-  },
-  {
-    name: "HAND CLAP",
-    src:
-    	"samples/Claps/HandClap.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Claps/7[kb]HandClap.wav.mp3"
-  },
-  {
-    name: "NORMAL CRASH",
-    src:
-    	"samples/Crashes/normal-crash.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Crashes/123[kb]normal-crash.wav.mp3"
-  },
-  {
-    name: "CRYSTAL RIDE",
-    src:
-    	"samples/Rides/crystal_ride.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Rides/139[kb]crystal_ride.wav.mp3"
-  },
-  {
-    name: "SATISFY 1",
-    src:
-    	"samples/Melodic_Hits/stab-satisfying-1.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Melodic%20Stabs%20and%20Hits/1166[kb]stab-satisfying-1.wav.mp3"
-  },
-  {
-    name: "SATISFY 2",
-    src:
-    	"samples/Melodic_Hits/stab-satisfying-10.wav"
-      // "https://sampleswap.org/samples-ghost/DRUMS%20(SINGLE%20HITS)/Melodic%20Stabs%20and%20Hits/1166[kb]stab-satisfying-10.wav.mp3"
-  }
-];
-
-const soundBank = {};
-for (let i = 0; i < keys.length; i++) {
-  soundBank[keys[i]] = sounds[i];
-}
-
+const keys = ["Q","W","E","A","S","D","Z","X","C"];
 const Display = (props) => {
   return <div id="display">{props.display}</div>;
 };
@@ -78,38 +16,27 @@ const MasterVolume = (props) => {
   );
 };
 
+// TODO use char as id instead of using sound name
 const DrumPad = (props) => {
   const handleClick = (event) => {
-    props.playSound(props.note);
+    props.onPadTriggered(props.char);
   };
 
   return (
-    <div className="drum-pad" id={props.id} onClick={handleClick}>
-      {props.note}
-      <Sound note={props.note} />
+    <div className="drum-pad" id={props.char} onClick={handleClick}>
+      {props.char}
     </div>
   );
 };
 
-const Sound = (props) => {
-  return (
-    <audio
-      src={soundBank[props.note].src}
-      className="clip"
-      id={props.note}
-      preload="auto"
-    />
-  );
-};
-
+// TODO use char as id instead of using sound name, can eliminate 'id' prop in DrumPad
 const DrumPadArea = (props) => {
   return (
     <div id="drum-pad-area">
       {keys.map((char) => (
         <DrumPad
-          id={soundBank[char].name}
-          note={char}
-          playSound={props.playSound}
+          char={char}
+          onPadTriggered={props.onPadTriggered}
         />
       ))}
     </div>
@@ -128,16 +55,14 @@ export default class DrumMachine extends React.Component {
     super(props);
     this.state = { display: "PLAY ME", vol: 1 };
     this.setDisplay = this.setDisplay.bind(this);
-    this.playSound = this.playSound.bind(this);
+    this.onPadTriggered = this.onPadTriggered.bind(this);
     this.handleVolChange = this.handleVolChange.bind(this);
   }
 
-  playSound(note) {
-    const sound = document.getElementById(note);
-    sound.currentTime = 0.0;
-    sound.volume = this.state.vol;
-    sound.play();
-    const name = soundBank[note].name;
+  onPadTriggered(char) {
+    const sample = this.props.soundBank[char].sample;
+    playSample(this.props.audioContext, sample);
+    const name = this.props.soundBank[char].name;
     this.setDisplay(name);
   }
 
@@ -153,9 +78,9 @@ export default class DrumMachine extends React.Component {
 
   onKeyDown = (event) => {
     const keyCode = event.which || event.keyCode;
-    const note = String.fromCharCode(keyCode);
-    if(keys.includes(note)){
-      this.playSound(note);
+    const char = String.fromCharCode(keyCode);
+    if(keys.includes(char)){
+      this.onPadTriggered(char);
     }
   };
 
@@ -172,7 +97,7 @@ export default class DrumMachine extends React.Component {
         ref="component"
       >
         <Display display={this.state.display} />
-        <DrumPadArea playSound={this.playSound} />
+        <DrumPadArea soundBank={this.props.soundBank} onPadTriggered={this.onPadTriggered} />
         <ControlArea handleVolChange={this.handleVolChange} />
       </div>
     );
