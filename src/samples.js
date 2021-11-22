@@ -1,4 +1,4 @@
-const sounds = [
+const sounds1 = [
   {
     name: "ANALOG KICK",
     src:
@@ -56,4 +56,4 @@ const sounds = [
   }
 ];
 
-export default sounds;
+export default sounds1;

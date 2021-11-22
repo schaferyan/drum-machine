@@ -2,7 +2,6 @@ import React from 'react';
 import './DrumMachine.css';
 import {playSample} from './audioFunctions'
 
-const keys = ["Q","W","E","A","S","D","Z","X","C"];
 const Display = (props) => {
   return <div id="display">{props.display}</div>;
 };
@@ -10,13 +9,12 @@ const Display = (props) => {
 const MasterVolume = (props) => {
   return (
     <div className="control-element">
-      <input type="range" className="slider" onChange={props.handleChange} />
+      <input type="range" className="slider" min="0" max="1" step="0.02"  onChange={props.handleChange} />
       <label className="slider-label">Volume</label>
     </div>
   );
 };
 
-// TODO use char as id instead of using sound name
 const DrumPad = (props) => {
   const handleClick = (event) => {
     props.onPadTriggered(props.char);
@@ -29,11 +27,11 @@ const DrumPad = (props) => {
   );
 };
 
-// TODO use char as id instead of using sound name, can eliminate 'id' prop in DrumPad
+
 const DrumPadArea = (props) => {
   return (
     <div id="drum-pad-area">
-      {keys.map((char) => (
+      {props.keyset.map((char) => (
         <DrumPad
           char={char}
           onPadTriggered={props.onPadTriggered}
@@ -42,6 +40,7 @@ const DrumPadArea = (props) => {
     </div>
   );
 };
+
 const ControlArea = (props) => {
   return (
     <div id="control-area">
@@ -53,7 +52,7 @@ const ControlArea = (props) => {
 export default class DrumMachine extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { display: "PLAY ME", vol: 1 };
+    this.state = { display: "PLAY ME", vol: 0.7 };
     this.setDisplay = this.setDisplay.bind(this);
     this.onPadTriggered = this.onPadTriggered.bind(this);
     this.handleVolChange = this.handleVolChange.bind(this);
@@ -61,7 +60,7 @@ export default class DrumMachine extends React.Component {
 
   onPadTriggered(char) {
     const sample = this.props.soundBank[char].sample;
-    playSample(this.props.audioContext, sample);
+    playSample(this.props.audioContext, sample, 0, this.state.vol);
     const name = this.props.soundBank[char].name;
     this.setDisplay(name);
   }
@@ -72,14 +71,14 @@ export default class DrumMachine extends React.Component {
     });
   }
   handleVolChange = (event) => {
-    this.setState({ vol: event.target.value / 100 });
+    this.setState({ vol: event.target.value });
     console.log(this.state.vol);
   };
 
   onKeyDown = (event) => {
     const keyCode = event.which || event.keyCode;
     const char = String.fromCharCode(keyCode);
-    if(keys.includes(char)){
+    if(this.props.keyset.includes(char)){
       this.onPadTriggered(char);
     }
   };
@@ -97,10 +96,14 @@ export default class DrumMachine extends React.Component {
         ref="component"
       >
         <Display display={this.state.display} />
-        <DrumPadArea soundBank={this.props.soundBank} onPadTriggered={this.onPadTriggered} />
+        <DrumPadArea keyset={this.props.keyset} soundBank={this.props.soundBank} onPadTriggered={this.onPadTriggered} />
         <ControlArea handleVolChange={this.handleVolChange} />
       </div>
     );
   }
 }
+
+/*passed keyset as prop to avoid redundancy and improve modability
+implemented gain node to restore master volume control*/
+
 

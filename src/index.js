@@ -8,13 +8,13 @@ import sounds from './samples.js';
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
-const keys = ["Q","W","E","A","S","D","Z","X","C"];
+const keyset = ["Q","W","E","A","S","D","Z","X","C"];
 
-AudioFunctions.setupSamples(audioContext, sounds, keys)
+AudioFunctions.setupSamples(audioContext, sounds, keyset)
     .then((soundBank) => {
      ReactDOM.render(
   		<React.StrictMode>
-    		<DrumMachine audioContext={audioContext} soundBank={soundBank}/>
+    		<DrumMachine audioContext={audioContext} soundBank={soundBank} keyset={keyset}/>
  		 </React.StrictMode>,
   		document.getElementById('root')
 );
