@@ -6,15 +6,14 @@ import reportWebVitals from './reportWebVitals';
 import * as AudioFunctions from './audioFunctions';
 import sounds from './samples.js';
 
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioContext = new AudioContext();
+
 const keyset = ["Q","W","E","A","S","D","Z","X","C"];
 
-AudioFunctions.setupSamples(audioContext, sounds, keyset)
-    .then((soundBank) => {
+AudioFunctions.prepAudio(sounds, keyset)
+    .then(() => {
      ReactDOM.render(
   		<React.StrictMode>
-    		<DrumMachine audioContext={audioContext} soundBank={soundBank} keyset={keyset}/>
+    		<DrumMachine keyset={keyset}/>
  		 </React.StrictMode>,
   		document.getElementById('root')
 );

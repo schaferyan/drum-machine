@@ -1,6 +1,6 @@
 import React from 'react';
 import './DrumMachine.css';
-import {playSample} from './audioFunctions'
+import {playSample, getDuration, getSampleName, setGain} from './audioFunctions'
 
 const Display = (props) => {
   return <div id="display">{props.display}</div>;
@@ -52,20 +52,19 @@ const ControlArea = (props) => {
 export default class DrumMachine extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { display: "PLAY ME", vol: 0.7 };
+    this.state = { display: "PLAY ME", vol: 1.0 };
     this.setDisplay = this.setDisplay.bind(this);
     this.onPadTriggered = this.onPadTriggered.bind(this);
     this.handleVolChange = this.handleVolChange.bind(this);
   }
 
   onPadTriggered(char) {
-    const sample = this.props.soundBank[char].sample;
-    playSample(this.props.audioContext, sample, 0, this.state.vol);
-    const name = this.props.soundBank[char].name;
+    playSample( char, 0, this.state.vol);
+    const name = getSampleName(char);
     this.setDisplay(name);
     const pad = document.getElementById(char);
     pad.classList.add('drum-pad-active');
-    const timeoutID = setTimeout(() => {pad.classList.remove('drum-pad-active')}, sample.duration * 1000);
+    setTimeout(() => {pad.classList.remove('drum-pad-active')}, getDuration(char));
   }
 
   
@@ -75,8 +74,10 @@ export default class DrumMachine extends React.Component {
       display: soundName
     });
   }
+
   handleVolChange = (event) => {
     this.setState({ vol: event.target.value });
+    setGain(this.state.vol);
   };
 
   onKeyDown = (event) => {
@@ -100,7 +101,7 @@ export default class DrumMachine extends React.Component {
         ref="component"
       >
         <Display display={this.state.display} />
-        <DrumPadArea keyset={this.props.keyset} soundBank={this.props.soundBank} onPadTriggered={this.onPadTriggered} />
+        <DrumPadArea keyset={this.props.keyset} onPadTriggered={this.onPadTriggered} />
         <ControlArea handleVolChange={this.handleVolChange} />
       </div>
     );
@@ -109,7 +110,6 @@ export default class DrumMachine extends React.Component {
 
 
 
-/*passed keyset as prop to avoid redundancy and improve modability
-implemented gain node to restore master volume control*/
+/*added abstraction layer by moving audio details to audioFunctions.js*/
 
 
