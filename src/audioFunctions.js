@@ -9,13 +9,21 @@ let gainNode;
 let startTime = null;
 let bpm = 120.0;
 let quantization = 0.5;
-const triggerList = [];
+// const triggerList = [];
+const sequence = [];
+let loopLengthInBars = 2;
 
-let currentBeat = 0;
+let currentStep = 0;
 let lookahead = 25.0;
 let scheduleAheadTime = 0.1;
-let nextClickTime = 0.0;
-let clickIntervalID = null;;
+let nextNoteTime = 0.0;
+let clickIntervalID = null;
+let metronome = true;
+
+// In order to be able to loop continuously and stop on request, we need to schedule events just beofre they happen 
+// (within the scheduleAhead time range) instead of as soon as play or record is pressed. This means events need to be stored in order.
+// It also means that either click events and triggers need to be stored in a single qeue, or we need to look at both the qeue and the clicks
+// seperately in the scheduler function
 
 document.addEventListener("mousemove", function() {
   audioContext.resume();
@@ -37,7 +45,7 @@ async function setupSamples( samples, keyset) {
 		const filePath = samples[i].src;
 		const sample = await getFile( filePath);
 		soundBank[keyset[i]] = {name: samples[i].name, sample: sample};
-	}
+  }
 }
 
 async function prepAudio( samples, keyset){
@@ -46,12 +54,13 @@ async function prepAudio( samples, keyset){
   gainNode.connect(audioContext.destination);
 }
 
+
+
 function recordStart(){
   console.log("record request recieved");
   countOff();
-  startMetronome();
   playLoop();
-  console.log("record started at " + startTime)
+  console.log("record started at " + startTime);
 }
 
 function countOff(){
@@ -64,13 +73,15 @@ function countOff(){
 }
 
 function stop(){
-  console.log("triggerList =");
-  for(let i=0; i < triggerList.length; i++){
-    console.log(triggerList[i].char + " pressed at " + triggerList[i].time);
-  }
   // stop the metronome
   clearInterval(clickIntervalID);
   startTime = null;
+  for(let i = 0; i < sequence.length; i++){
+    console.log("recorded " + sequence[i]);
+    // for(let i = 0; i < step.length; i++){
+    //   console.log("recorded " + step[i] + " at " + step);
+    // }
+  }
 }
 
 function getAudioBuffer(char){
@@ -90,9 +101,19 @@ function playSample( char, time, recording) {
     }
 }
 
+
 function recordTrigger(currentTime, char){
   let triggerTime = currentTime - startTime;
-  if(triggerTime > 0){triggerList.push({char: char, time: quantize(triggerTime)})};
+  let step = quantize(triggerTime);
+  console.log("recording trigger " + char + " at " + step);
+  if(sequence[step]){
+    sequence[step].push(char);
+    console.log( "pushed " + char + "to array at " + step)
+  }else if(triggerTime >= 0){
+    sequence[step] = [char];
+    console.log("recorded " + char);
+  }
+  // if(triggerTime > 0){triggerList.push({char: char, step: quantize(triggerTime)})};
 }
 
 function quantize(time){
@@ -113,11 +134,11 @@ function setGain(vol){
   gainNode.gain.value = vol;
 }
 
-function scheduleClick(beatNumber, time){
+function scheduleClick(stepNumber, time){
     const osc = audioContext.createOscillator();
     const envelope = audioContext.createGain();
 
-    osc.frequency.value = (beatNumber % 4 === 0) ? 1000 : 800;
+    osc.frequency.value = (stepNumber % (4/quantization) === 0) ? 1000 : 800;
     envelope.gain.value = 1;
     envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
     envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
@@ -127,28 +148,48 @@ function scheduleClick(beatNumber, time){
     osc.stop(time + 0.03);
 }
 
-function nextBeat() {
-    console.log("scheduler advancing to next beat")
-    let secondsPerBeat = 60.0 / bpm;        
-    nextClickTime += secondsPerBeat;    // Add beat length to last beat time
-    currentBeat++;    // Advance the beat number, wrap to zero
-    if (currentBeat === 4) {
-        currentBeat = 0;
+function scheduleNote(step, time){
+  if(sequence[step]){
+    for(let i = 0; i < sequence[step].length; i++){
+     playSample(sequence[step][i], time, false);
     }
+  }
 }
+
+function nextStep() {
+    console.log("scheduler advancing to next step")
+    let secondsPerBeat = 60.0 / bpm;        
+    nextNoteTime += secondsPerBeat * quantization;    // Add step length to last note time
+    currentStep++;    // Advance the step number
+    // if (currentStep === 4/quantization) {
+    //     currentStep = 0;
+    // }
+    if(currentStep === (loopLengthInBars * 4) / quantization){
+      console.log("reached step " + currentStep + " restarting loop");
+      currentStep = 0;
+      startTime = nextNoteTime;
+    }
+
+}
+
 
 function scheduler(){
-  let loopExit = audioContext.currentTime + scheduleAheadTime
-  while (nextClickTime < loopExit ) {
-        scheduleClick( currentBeat, nextClickTime );
-        nextBeat();
+  let marker = audioContext.currentTime + scheduleAheadTime
+  while (nextNoteTime < marker ) {
+      scheduleNote(currentStep, nextNoteTime);
+      if(metronome && currentStep % (1/quantization) == 0){
+        scheduleClick( currentStep, nextNoteTime );
+      }
+      nextStep();
     }
     
+    // const loopLengthInSeconds = beatLength * 4 * loopLengthInBars;
+    // const newLoopStart = startTime + loopLengthInSeconds  
 }
 
-function startMetronome(){
-  currentBeat = 0;
-  nextClickTime = audioContext.currentTime;
+function startClock(){
+  currentStep = 0;
+  nextNoteTime = startTime;
   clickIntervalID = setInterval(scheduler, lookahead);
   console.log("starting metronome");
 }
@@ -157,11 +198,15 @@ function playLoop(){
   if(startTime === null){
     startTime = audioContext.currentTime;
   }
-  for(let i=0; i < triggerList.length; i++){
-    const time = startTime + (triggerList[i].time * 60.0/bpm * quantization);
-    playSample(triggerList[i].char, time , false);
-  }
+  
+  startClock();
+  // for(let i=0; i < triggerList.length; i++){
+  //   const time = startTime + (triggerList[i].time * 60.0/bpm * quantization);
+  //   playSample(triggerList[i].char, time , false);
+  // }
 }
+
+
 
 function setBpm(newTempoInBpm){
   bpm = newTempoInBpm;
@@ -171,4 +216,12 @@ function getInstant(){
   return audioContext.currentTime;
 }
 
-export{setupSamples, prepAudio, playSample, getDuration, getSampleName, setGain, recordStart, stop, startMetronome, playLoop, setBpm, getInstant};
+function clearLoop(){
+  sequence.length = 0;
+}
+
+function setLoopLength(lengthInBars){
+  loopLengthInBars = lengthInBars;
+}
+
+export{setupSamples, prepAudio, playSample, getDuration, getSampleName, setGain, recordStart, stop, startClock, playLoop, setBpm, getInstant, clearLoop, setLoopLength};

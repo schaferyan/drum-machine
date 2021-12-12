@@ -39,7 +39,7 @@
   grid-column: 2;
 }
 
-.drum-pad-active {
+.drum-pad-active, .button-active {
   background: black;
   color: white;
 }
@@ -57,7 +57,7 @@
 
 .slider-label {
   position: relative;
-  right: 95px;
+  left: 5px;
   top: 180px;
 }
 
@@ -72,7 +72,7 @@
   transform: rotate(270deg);
   position: relative;
   top: 120px;
-  right: 20px;
+  left: 80px;
   -webkit-appearance: none;
   width: 50%;
   background: transparent;

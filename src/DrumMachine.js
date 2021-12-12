@@ -1,6 +1,6 @@
 import React from 'react';
 import './DrumMachine.css';
-import {playSample, getDuration, getSampleName, setGain, recordStart, stop, playLoop, setBpm, getInstant} from './audioFunctions'
+import {playSample, getDuration, getSampleName, setGain, recordStart, stop, playLoop, setBpm, getInstant, setLoopLength, clearLoop} from './audioFunctions'
 
 const Display = (props) => {
   return <div id="display">{props.display}</div>;
@@ -25,6 +25,14 @@ const TempoControl = (props) => {
 		)
 }
 
+const LoopLength = (props) => {
+	return(
+		<div className="control-element" id="loop-length" >
+			<input className="text-input" type="number" min="1" max="100" value={props.loopLength} onChange={props.handleChange}/>
+			<label>bars</label>
+		</div> 
+		)
+}
 
 const DrumPad = (props) => {
   const handleClick = (event) => {
@@ -60,9 +68,10 @@ const ControlArea = (props) => {
       <MasterVolume handleChange={props.handleVolChange} />
       
       <button onClick={props.handleRecordStart} id="button-record" className="playback-control">REC</button>
-      <button onClick={props.handleRecordStop} id="button-stop" className="playback-control">STOP</button>
+      <button onClick={props.handleStop} id="button-stop" className="playback-control">STOP</button>
       <button onClick={props.handlePlayPressed} id="button-play" className="playback-control">PLAY</button>
-
+      <button onClick={props.handleClearPressed} id="button-clear" className="loop-controls">CLEAR</button>
+      <LoopLength handleChange={props.handleLoopLengthChange} loopLength={props.loopLength}/>
       <TempoControl handleChange={props.handleBpmChange} bpm={props.bpm}/>
     </div>
   );
@@ -71,28 +80,35 @@ const ControlArea = (props) => {
 export default class DrumMachine extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { display: "PLAY ME", vol: 1.0, bpm: 120.0 };
+    this.state = { display: "PLAY ME", vol: 1.0, bpm: 120.0, loopLength: 2 };
     this.setDisplay = this.setDisplay.bind(this);
     this.onPadTriggered = this.onPadTriggered.bind(this);
     this.handleVolChange = this.handleVolChange.bind(this);
     this.handleRecordStart = this.handleRecordStart.bind(this);
-    this.handleRecordStop = this.handleRecordStop.bind(this);
+    this.handleStop = this.handleStop.bind(this);
     this.handlePlayPressed = this.handlePlayPressed.bind(this);
+    this.handleClearPressed = this.handleClearPressed.bind(this);
   }
 
   handleRecordStart(){
-  	this.setState({recording: true});
+  	this.setState({recording: true, playing: true});
   	recordStart();
+  	document.getElementById('button-record').classList.add('button-active');
   }
 
-  handleRecordStop(){
-  	this.setState({recording: false});
+  handleStop(){
+  	this.setState({recording: false, playing: false});
   	stop();
+  	document.getElementById('button-record').classList.remove('button-active');
   }
 
   handlePlayPressed(){
   	this.setState({playing: true});
   	playLoop();
+  }
+
+  handleClearPressed(){
+  	clearLoop();
   }
 
   onPadTriggered(char) {
@@ -125,6 +141,14 @@ export default class DrumMachine extends React.Component {
   	}
   }
 
+  handleLoopLengthChange = (event) => {
+	this.setState({loopLength: event.target.value})
+	if(this.state.loopLength >= 1 && this.state.loopLength <= 100){
+		console.log("calling set loop length ");
+		setLoopLength(this.state.loopLength);
+	}
+  }
+
   onKeyDown = (event) => {
   	console.log("key pressed at " + getInstant())
     const char = event.key.toUpperCase();
@@ -132,6 +156,12 @@ export default class DrumMachine extends React.Component {
     console.log(char)
     if(this.props.keyset.includes(char)){
       this.onPadTriggered(char);
+    }
+    else if(char === " " && (this.state.playing || this.state.recording)){
+    	this.handleStop();
+    }
+    else if(char === " "){
+    	this.handlePlayPressed();
     }
   };
 
@@ -148,15 +178,13 @@ export default class DrumMachine extends React.Component {
         ref="component">
         <Display display={this.state.display} />
         <DrumPadArea keyset={this.props.keyset} onPadTriggered={this.onPadTriggered} />
-        <ControlArea bpm={this.state.bpm} handlePlayPressed={this.handlePlayPressed} handleVolChange={this.handleVolChange} 
-        handleRecordStart={this.handleRecordStart} handleRecordStop={this.handleRecordStop} handleBpmChange={this.handleBpmChange}/>
+        <ControlArea bpm={this.state.bpm} loopLength={this.state.loopLength} handlePlayPressed={this.handlePlayPressed} handleVolChange={this.handleVolChange} 
+        handleRecordStart={this.handleRecordStart} handleStop={this.handleStop} handleBpmChange={this.handleBpmChange} handleLoopLengthChange ={this.handleLoopLengthChange}
+        handleClearPressed={this.handleClearPressed}/>
       </div>
     );
   }
 }
 
-
-
-/*added abstraction layer by moving audio details to audioFunctions.js*/
 
 
