@@ -8,12 +8,19 @@ import sounds from './samples.js';
 
 
 const keyset = ["Q","W","E","A","S","D","Z","X","C"];
+const lookahead = 25.0;
+const scheduleAheadTime = 0.1;
 
-AudioFunctions.prepAudio(sounds, keyset)
-    .then(() => {
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioContext();
+
+AudioFunctions.setupSamples(audioContext, sounds, keyset)
+    .then((soundBank) => {
+    	const gainNode = AudioFunctions.createGainNode(audioContext);
      ReactDOM.render(
   		<React.StrictMode>
-    		<DrumMachine keyset={keyset}/>
+    		<DrumMachine audioContext={audioContext} gainNode={gainNode} keyset={keyset} lookahead={lookahead} 
+    		scheduleAheadTime={scheduleAheadTime} soundBank={soundBank}/>
  		 </React.StrictMode>,
   		document.getElementById('root')
 );
