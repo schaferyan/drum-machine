@@ -25,10 +25,28 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Drum Machine by Ryan Schafer</title>
+    <!-- TODO: Move to separate files-->
+    <style>
+    .parent {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #drum-machine {
+      background-color: white;
+    }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div class="parent">
     <div id="root"></div>
+    <h1>
+      <button id="genNew">Generate New Random Color</button>
+      <span id="color"></span>
+    </h1>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -39,5 +57,15 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <!-- TODO: Move to separate files-->
+    <script>
+      const setBg = () => {
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
+        document.body.style.backgroundColor = "#" + randomColor;
+        color.innerHTML = "#" + randomColor;
+      }
+      genNew.addEventListener("click", setBg);
+      setBg();
+    </script>
   </body>
 </html>
