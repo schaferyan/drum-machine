@@ -134,15 +134,13 @@ export default class DrumMachine extends React.Component {
   constructor(props) {
     super(props);
     if(localStorage.getItem("state")){
-    	const state = JSON.parse(localStorage.getItem("state"));
-    	console.log("retrieved state: " + state);
-    	for(const property in state){
-    		console.log(property + " : " + state[property]);
-    	}
-    	this.state = state;
+    	const savedState = JSON.parse(localStorage.getItem("state"));
+    	this.state = {...savedState, display: "PLAY ME", recording: false, playing: false, currentStep: 0, 
+    	nextNoteTime: 0, startTime: 0, overdub: false};
     }else{
     	this.state = { display: "PLAY ME", vol: 1.0, bpm: 120.0, loopLength: 2, quantization: 0.5, 
-    sequence: [], metronome: true, recording: false, playing: false, currentStep: 0, nextNoteTime: 0, startTime: 0, overdub: false };
+    	sequence: [], metronome: true, recording: false, playing: false, currentStep: 0, nextNoteTime: 0, 
+    	startTime: 0, overdub: false };
     }
     
     this.setDisplay = this.setDisplay.bind(this);
@@ -182,7 +180,8 @@ export default class DrumMachine extends React.Component {
   	console.log("stopped, reading clickIntervalId: " + this.state.clickIntervalId)
   	clearInterval(this.state.clickIntervalId);
   	document.getElementById('button-record').classList.remove('button-active');
-  	localStorage.setItem("state", JSON.stringify(this.state));
+  	const {vol, bpm, loopLength, quantization, sequence, metronome, overdub} = this.state;
+  	localStorage.setItem("state", JSON.stringify({vol, bpm, loopLength, quantization, sequence, metronome, overdub}));
   }
 
   
