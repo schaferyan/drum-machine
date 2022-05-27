@@ -13,10 +13,13 @@ Click [here](https://admiring-curran-f5b783.netlify.app/) to see a simple deploy
 2. You will need to install/update npm if you have not already - use `sudo apt-get install npm` (or `npm install` if you are using Windows)
 3. Run `npm start` - the application should open in a browser window. If not, open http://localhost:3000/ manually.
 
+## New Features
+Settings and sequences are now persisted using local storage. This means that if you close the tab or refresh the page, your most recent settings and whatever sequence was recorded before you navigated away will still be there. Note that currently data is only persisted to local storage when the "stop" button is pressed.
+
 ## Bug Fixes
 
 ### Latency
-I recently migrated the project to use the Web Audio API, instead of just playing sound from <audio> tags using the HTML DOM Audio object. This seems to have significantly decreased latency.
+I altered the project to use the Web Audio API, instead of just playing sound from <audio> tags using the HTML DOM Audio object. This seems to have significantly decreased latency.
 
 ## Plans for Future Updates
 I intend to add a few more sound banks and a control element for cycling through them. I'd also like to add an interface that allows users to create their own soundbank by entering custom urls. I'm also considering adding recording and/or step sequencer functionality.
