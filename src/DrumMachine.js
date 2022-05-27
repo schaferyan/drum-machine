@@ -133,8 +133,18 @@ const ControlArea = (props) => {
 export default class DrumMachine extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { display: "PLAY ME", vol: 1.0, bpm: 120.0, loopLength: 2, quantization: 0.5, 
+    if(localStorage.getItem("state")){
+    	const state = JSON.parse(localStorage.getItem("state"));
+    	console.log("retrieved state: " + state);
+    	for(const property in state){
+    		console.log(property + " : " + state[property]);
+    	}
+    	this.state = state;
+    }else{
+    	this.state = { display: "PLAY ME", vol: 1.0, bpm: 120.0, loopLength: 2, quantization: 0.5, 
     sequence: [], metronome: true, recording: false, playing: false, currentStep: 0, nextNoteTime: 0, startTime: 0, overdub: false };
+    }
+    
     this.setDisplay = this.setDisplay.bind(this);
     this.onPadTriggered = this.onPadTriggered.bind(this);
     this.handleVolChange = this.handleVolChange.bind(this);
@@ -145,6 +155,7 @@ export default class DrumMachine extends React.Component {
     this.scheduler = this.scheduler.bind(this);
     this.setBpm = this.setBpm.bind(this);
     this.setLoopLength = this.setLoopLength.bind(this);
+
   }
 
   handleRecordStart(){
@@ -165,12 +176,16 @@ export default class DrumMachine extends React.Component {
   	AudioFunctions.countOff(this.props.audioContext, currentTime, beatLength, this.state.quantization);
   }
 
+
   handleStop(){
   	this.setState({recording: false, playing: false, startTime: null});
   	console.log("stopped, reading clickIntervalId: " + this.state.clickIntervalId)
   	clearInterval(this.state.clickIntervalId);
   	document.getElementById('button-record').classList.remove('button-active');
+  	localStorage.setItem("state", JSON.stringify(this.state));
   }
+
+  
 
   handlePlayPressed(){
   	if(this.state.playing){

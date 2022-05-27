@@ -23,18 +23,9 @@ AudioFunctions.setupSamples(audioContext, sounds, keyset)
     		scheduleAheadTime={scheduleAheadTime} soundBank={soundBank}/>
  		 </React.StrictMode>,
   		document.getElementById('root')
-	);
+);
+   
 });
-
-const setBg = () => {
-        const randomColor = Math.floor(Math.random()*16777215).toString(16);
-        const color = document.getElementById("color");
-        document.body.style.backgroundColor = "#" + randomColor;
-        color.innerHTML = "#" + randomColor;
-      }
-const genNew = document.getElementById("genNew");
-genNew.addEventListener("click", setBg);
-setBg();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

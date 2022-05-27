@@ -27,15 +27,7 @@
     <title>Drum Machine by Ryan Schafer</title>
     <!-- TODO: Move to separate files-->
     <style>
-    .parent {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    #drum-machine {
-      background-color: white;
-    }
+    
     </style>
   </head>
   <body>
@@ -58,14 +50,5 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <!-- TODO: Move to separate files-->
-    <script>
-      const setBg = () => {
-        const randomColor = Math.floor(Math.random()*16777215).toString(16);
-        document.body.style.backgroundColor = "#" + randomColor;
-        color.innerHTML = "#" + randomColor;
-      }
-      genNew.addEventListener("click", setBg);
-      setBg();
-    </script>
   </body>
 </html>

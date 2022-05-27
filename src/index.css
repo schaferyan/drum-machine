@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.parent {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+    
+#drum-machine {
+      background-color: white;
+}
